@@ -78,14 +78,28 @@ class JavaChecker:
         """
         if not self.__installed:
             self.__install_jdk()
+    
+    def ignore_install(self):
+        """
+            Ignores Java Development Kit installation.
+        """
+        self.__install_jdk()
 
 #Private methods
+    #Private methods
     def __install_jdk(self):
         """
             Installs Java Development Kit 17.
         """
         jdk.install(self.__version_if_not_found, path=self.__set_location_if_not_found)
         self.__update_data_jdk()
+        
+        new_path = self.__set_location_if_not_found.replace("/", "\\")
+        all_elem = os.listdir(self.__set_location_if_not_found)
+        fol = [i for i in all_elem if os.path.isdir(os.path.join(self.__set_location_if_not_found, i))]
+        if fol[0] is not None:
+            new_path += "\\"+fol[0]
+        os.system(f'setx JAVA_HOME "{new_path}"')
 
     def __update_data_jdk(self):
         """
