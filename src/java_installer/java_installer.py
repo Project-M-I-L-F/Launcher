@@ -192,6 +192,3 @@ class JavaChecker:
             Returns string representation of the class.
         """
         return f"Java version: {self.__version}, Java home: {self.__home}"
-
-if __name__ == "__main__":
-    java_checker = JavaChecker()
