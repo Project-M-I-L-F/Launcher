@@ -1,11 +1,18 @@
-from .utils import jdk, os, subprocess, re
 '''
     JavaChecker - class for checking Java version and installing it if it is not installed.
 '''
 __author__ = "Igor Co"
 __version__ = "1.0.0"
 
+#Base imports
+import os
+import subprocess
+import re
+#Custom imports
+import jdk
+
 JAVA_VERSION = '17'
+DEFAULT_JAVA_HOME = 'C:/Java'
 
 class JavaChecker:
     '''
@@ -14,10 +21,10 @@ class JavaChecker:
     Methods:
     __init__ - constructor of the class, checks Java version and installs it if it is not installed.
     jdk_installer - installs Java Development Kit 17.
-    __java_check - checks Java version and installs it if it is not installed.
-    __jdk_location_by_java_pror - gets Java home directory from Java properties.
-    __jdk_location - gets Java home directory from JAVA_HOME environment variable or from Java properties.
-    __jdk_version_check - checks Java version.
+    __check_java - checks Java version and installs it if it is not installed.
+    __location_jdk_by_java_pror - gets Java home directory from Java properties.
+    __location_jdk - gets Java home directory from JAVA_HOME environment variable or from Java properties.
+    __check_version_jdk - checks Java version.
     __jdk_check_is_version_avaible - checks if Java version is 8.0 or higher.
     __str__ - returns string representation of the class.
 
@@ -30,34 +37,75 @@ class JavaChecker:
     java_checker = JavaChecker()
     
 '''
-    __home = "C:/Java"
+    __home = None
+    __set_location_if_not_found = DEFAULT_JAVA_HOME
     __installed = False
     __version = None
+    __version_if_not_found = JAVA_VERSION
 
-    def __init__(self):
+    def __init__(self, reserved_location: str = DEFAULT_JAVA_HOME, reserved_version: int = JAVA_VERSION):
         """
             Constructor of the class, checks Java version and installs it if it is not installed.
         """
-        self.__java_check()
-        print(self.__jdk_location_by_java_pror())
+        self.__set_location_if_not_found = reserved_location
+        self.__version_if_not_found = reserved_version
+        self.__check_java()
+        print(self.__location_jdk_by_java_pror())
 
+    def jdk_status(self):
+        """
+            Returns Java Development Kit status.
+        """
+        self.__update_data_jdk()
+        return self.__installed
 
-    def jdk_installer(self):
+    def set_location(self, location: str):
+        """
+            Sets reserved location for JDK.
+        """
+        self.__set_location_if_not_found = location
+        self.__update_data_jdk()
+
+    def get_location(self):
+        """
+            Returns Java home directory.
+        """
+        return self.__home
+
+    def install(self):
         """
             Installs Java Development Kit 17.
         """
-        jdk.install(JAVA_VERSION, path=self.__home)
+        if not self.__installed:
+            self.__install_jdk()
 
-    def __java_check(self):
+#Private methods
+    def __install_jdk(self):
+        """
+            Installs Java Development Kit 17.
+        """
+        jdk.install(self.__version_if_not_found, path=self.__set_location_if_not_found)
+        self.__update_data_jdk()
+
+    def __update_data_jdk(self):
+        """
+            Updates Java Development Kit data.
+        """
+        self.__location_jdk()
+        self.__jdk_check_is_version_avaible()
+
+        self.__installed = self.__home and self.__version is not None
+
+    def __check_java(self):
         """
             Checks Java version and installs it if it is not installed.
         """
-        self.__jdk_location()
+        self.__location_jdk()
         self.__jdk_check_is_version_avaible()
 
         print(self)
 
-    def __jdk_location_by_java_pror(self):
+    def __location_jdk_by_java_pror(self):
         """
             Gets Java home directory from Java properties.'
         
@@ -83,7 +131,7 @@ class JavaChecker:
         except subprocess.CalledProcessError:
             return None
 
-    def __jdk_location(self):
+    def __location_jdk(self):
         """
             Gets Java home directory from JAVA_HOME environment variable or from Java properties.
         
@@ -96,17 +144,17 @@ class JavaChecker:
             self.__home = java_home
             self.__installed = True
 
-        elif self.__jdk_location_by_java_pror() is not None:
-            self.__home = self.__jdk_location_by_java_pror()
+        elif self.__location_jdk_by_java_pror() is not None:
+            self.__home = self.__location_jdk_by_java_pror()
             self.__installed = True
         else:
-            self.__home = "C:/Java"
+            self.__home = None
             self.__installed = False
-            self.jdk_installer()
-            self.__jdk_location()
+            self.__install_jdk()
+            self.__location_jdk()
         return self.__home
 
-    def __jdk_version_check(self):
+    def __check_version_jdk(self):
         """
             Checks Java version.
 
@@ -136,7 +184,7 @@ class JavaChecker:
             Returns:
             True if Java version is 8.0 or higher, False otherwise.
         """
-        self.__jdk_version_check()
+        self.__check_version_jdk()
         return self.__version >= 8.0
 
     def __str__(self):
