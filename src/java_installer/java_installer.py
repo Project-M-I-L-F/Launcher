@@ -50,7 +50,7 @@ class JavaChecker:
         self.__set_location_if_not_found = reserved_location
         self.__version_if_not_found = reserved_version
         self.__check_java()
-        print(self.__location_jdk_by_java_pror())
+        self.__location_jdk_by_java_pror()
 
     def jdk_status(self):
         """
@@ -70,6 +70,7 @@ class JavaChecker:
         """
             Returns Java home directory.
         """
+        self.__location_jdk()
         return self.__home
 
     def install(self):

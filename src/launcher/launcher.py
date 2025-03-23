@@ -3,6 +3,8 @@ import minecraft_launcher_lib as mll
 import subprocess
 import os
 
+from src.java_installer import java_installer
+
 def setup_minecraft_directory(directory_path):
     if not os.path.exists(directory_path):
         os.makedirs(directory_path)
