@@ -1,0 +1,9 @@
+{
+    "minecraft_version": "1.20.1",
+    "forge_version": "1.20.1-47.3.0",
+    "server": {
+        "name": "WebUniverseServer",
+        "ip": "ivanl47.aternos.me:42309",
+        "port": 42309
+    }
+}
